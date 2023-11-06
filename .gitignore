@@ -1,0 +1,5 @@
+chromedriver
+venv
+*.md
+*.json
+.env
