@@ -1,13 +1,16 @@
 import os
+import json
 import requests
 from requests_html import HTMLSession
 from dotenv import load_dotenv
 load_dotenv()
-import openai
-import pygsheets
 
+import openai
 openai.api_key = os.environ.get("open_ai_key")
+
+import pygsheets
 gc_client = pygsheets.authorize(client_secret='/Users/snerd/Desktop/projects/pythonprojects/eventbrite-scraper/client_secret.json')
+
 tags = ['climate','climatechange','climate_change','sustainability','zerowaste','zero_waste','cleanup','clean_up','sustainablefashion','sustainable_fashion']
 event_dict_list = []
 event_titles_list = []
@@ -16,15 +19,13 @@ def summarize(event_description):
     response = openai.ChatCompletion.create(
     model="gpt-3.5-turbo-16k",
     messages=[
-        # {"role": "system", "content": "Give the model some context. Describe their role and their expected writing/response style"},
-        {"role": "user", "content": f'I am going to give you a short text to summarize. Please summarize the text into 4 sentences or less. Do not include anything else in your response other than the summarized text. Here is the text I want you to summarize: {event_description}'}
+        {"role": "user", "content": f'Summarize the following text in 3-4 sentences without any introductory phrases or meta-comments: {event_description}'}
     ]
     )
     return response.choices[0].message.content
 
 for tag in tags:
     print(f'#~~~~~~~~~~{tag}~~~~~~~~~~#')
-    print('\n')
     try:
         session = HTMLSession()
         event_list = session.get(f'https://www.eventbrite.com/d/ny--new-york/events--next-week/%23{tag}/?page=1').html.find('.search-main-content__events-list-item')
@@ -46,12 +47,10 @@ for tag in tags:
                         except:
                             new_event_dict['date'] = 'See event page for event date and time details.'
                         try:
-                            # using Open AI API to summarize descriptions
                             description = event_page.html.find('.eds-text--left')
+                            # new_event_dict['description'] = description[0].text
                             summarized_description = summarize(description[0].text)
                             new_event_dict['description'] = summarized_description
-                            # new_event_dict['description'] = description[0].text
-                            # event_descriptions_list.append(description[0].text)
                         except:
                             new_event_dict['description'] = 'See event page for event description details.'
                         new_event_dict['link'] = link
@@ -59,14 +58,11 @@ for tag in tags:
                             event_titles_list.append(new_event_dict['title'])
                             event_dict_list.append(new_event_dict)
                             print(new_event_dict)
-                            print('\n')
                     except:
                         print(f'Something wrong with link {link}')
 
     except requests.exceptions.RequestException as e:
         print(e)
-
-print(event_dict_list)
 
 # exporting data to Google Sheet
 geh_workbook = gc_client.open('Green Events Hub')
