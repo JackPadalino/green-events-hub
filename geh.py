@@ -9,7 +9,10 @@ import openai
 openai.api_key = os.environ.get("open_ai_key")
 
 import pygsheets
-gc_client = pygsheets.authorize(client_secret='/Users/jasmineharrison/desktop/green-events-hub/client_secret.json')
+try:
+    gc_client = pygsheets.authorize(client_secret='/Users/snerd/Desktop/projects/pythonprojects/eventbrite-scraper/client_secret.json')
+except:
+    gc_client = pygsheets.authorize(client_secret='/Users/jasmineharrison/desktop/green-events-hub/client_secret.json')
 
 tags = ['climate','climatechange','climate_change','sustainability','zerowaste','zero_waste','cleanup','clean_up','sustainablefashion','sustainable_fashion']
 event_dict_list = []
