@@ -9,7 +9,7 @@ import openai
 openai.api_key = os.environ.get("open_ai_key")
 
 import pygsheets
-gc_client = pygsheets.authorize(client_secret='/Users/snerd/Desktop/projects/pythonprojects/eventbrite-scraper/client_secret.json')
+gc_client = pygsheets.authorize(client_secret='/Users/jasmineharrison/desktop/green-events-hub/client_secret.json')
 
 tags = ['climate','climatechange','climate_change','sustainability','zerowaste','zero_waste','cleanup','clean_up','sustainablefashion','sustainable_fashion']
 event_dict_list = []
@@ -65,7 +65,7 @@ for tag in tags:
         print(e)
 
 # exporting data to Google Sheet
-geh_workbook = gc_client.open('Green Events Hub')
+geh_workbook = gc_client.open('Green Events Hub - Event Log')
 new_sheet = geh_workbook.add_worksheet('Events next week', rows=100, cols=26, src_tuple=None, src_worksheet=None, index=None)
 new_sheet.update_value('A1','Title')
 new_sheet.update_value('B1','Tag')
@@ -80,3 +80,5 @@ for event_dict in event_dict_list:
     new_sheet.update_value(f'D{counter}',event_dict['description'])
     new_sheet.update_value(f'E{counter}',event_dict['link'])
     counter += 1
+
+print("All done!")
