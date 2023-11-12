@@ -2,3 +2,4 @@ venv
 *.md
 *.json
 .env
+__pycache__
