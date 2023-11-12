@@ -70,7 +70,7 @@ def get_events(tags,titles,events):
 def export_sheets(events):
     try:
         geh_workbook = gc_client.open('Green Events Hub - Event Log')
-        new_sheet = geh_workbook.add_worksheet('Events next week', rows=100, cols=26, src_tuple=None, src_worksheet=None, index=None)
+        new_sheet = geh_workbook.add_worksheet('Events this week', rows=100, cols=26, src_tuple=None, src_worksheet=None, index=None)
         new_sheet.update_value('A1','Title')
         new_sheet.update_value('B1','Tag')
         new_sheet.update_value('C1','Date')
