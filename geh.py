@@ -30,7 +30,7 @@ def get_events(tags,titles,events):
         try:
             print(f'#~~~~~~~~~~{tag}~~~~~~~~~~#')
             session = HTMLSession()
-            event_list = session.get(f'https://www.eventbrite.com/d/ny--new-york/events--next-week/%23{tag}/?page=1').html.find('.search-main-content__events-list-item')
+            event_list = session.get(f'https://www.eventbrite.com/d/ny--new-york/events--this-week/%23{tag}/?page=1').html.find('.search-main-content__events-list-item')
             for event in event_list:
                 new_event_dict = {}
                 new_event_dict['tag'] = tag
