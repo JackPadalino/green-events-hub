@@ -12,6 +12,16 @@ import pygsheets
 file_path = os.getcwd()
 gc_client = pygsheets.authorize(client_secret=f'{file_path}/client_secret.json')
 
+import datetime
+from datetime import datetime,timedelta
+import pytz
+utc_now = datetime.utcnow()
+nyc_timezone = pytz.timezone('America/New_York')
+start_date = utc_now.astimezone(nyc_timezone) + timedelta(days=2)
+end_date = start_date + timedelta(days=6)
+start_date = start_date.strftime('%Y-%m-%d')
+end_date = end_date.strftime('%Y-%m-%d')
+
 event_tags = ['climate','climatechange','climate_change','sustainability','zerowaste','zero_waste','cleanup','clean_up','sustainablefashion','sustainable_fashion']
 event_titles = []
 event_dicts = []
@@ -30,7 +40,7 @@ def get_events(tags,titles,events):
         try:
             print(f'#~~~~~~~~~~{tag}~~~~~~~~~~#')
             session = HTMLSession()
-            event_list = session.get(f'https://www.eventbrite.com/d/ny--new-york/events--this-week/%23{tag}/?page=1').html.find('.search-main-content__events-list-item')
+            event_list = session.get(f'https://www.eventbrite.com/d/ny--new-york/%23{tag}/?page=1&start_date={start_date}&end_date={end_date}').html.find('.search-main-content__events-list-item')
             for event in event_list:
                 new_event_dict = {}
                 new_event_dict['tag'] = tag
@@ -67,10 +77,10 @@ def get_events(tags,titles,events):
     return events
 
 # exporting data to Google Sheet
-def export_sheets(events):
+def export_sheets(events,start_date,end_date):
     try:
         geh_workbook = gc_client.open('Green Events Hub - Event Log')
-        new_sheet = geh_workbook.add_worksheet('Events this week', rows=100, cols=26, src_tuple=None, src_worksheet=None, index=None)
+        new_sheet = geh_workbook.add_worksheet(f'{start_date} - {end_date}', rows=100, cols=26, src_tuple=None, src_worksheet=None, index=None)
         new_sheet.update_value('A1','Title')
         new_sheet.update_value('B1','Tag')
         new_sheet.update_value('C1','Date')
@@ -91,5 +101,5 @@ def export_sheets(events):
 
 # main
 upcoming_events = get_events(event_tags,event_titles,event_dicts)
-export_sheets(upcoming_events)
+export_sheets(upcoming_events,start_date,end_date)
 print("All done!")
